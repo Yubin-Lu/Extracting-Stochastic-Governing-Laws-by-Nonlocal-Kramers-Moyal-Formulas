@@ -96,7 +96,7 @@ if __name__ == "__main__":
         
         time_set, position_x = GeneratingData(T, dt, 5000, x0)
         
-        ##标准化
+        
         mu_x = np.mean(position_x)
         sigma_x = 1/5*np.std(position_x)
         position_x = (position_x - mu_x) / sigma_x
@@ -119,12 +119,12 @@ if __name__ == "__main__":
     
         loader = data.DataLoader(
         dataset = x,
-        batch_size=50000,             # 每批提取的数量
-        shuffle=True,             # 要不要打乱数据（打乱比较好）
+        batch_size=50000,             
+        shuffle=True,             
         )
         
         Loss = np.array([])
-        for epoch in range(args.iterations):    # 对整套数据训练 iterations 次
+        for epoch in range(args.iterations):    
             # for i in range(args.iterations):
             for step, batch_x in enumerate(loader): 
                 optimizer.zero_grad()
@@ -139,11 +139,11 @@ if __name__ == "__main__":
         print("count:", count)
 
         ##System Identification
-        ##标准化  pure jump LM 0.5, BM+LM 1.5
+        ##  pure jump LM 0.5, BM+LM 1.5
         a, b = ((-1.+x0) - mu_x) / sigma_x, ((1.+x0) - mu_x) / sigma_x
         u0 = np.linspace(a, b, 201)
         
-        # ## 无标准化
+        # ## 
         # u0 = np.linspace(x0-1, x0+1, 201)
         
         du = 2/200
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         drift[count] = integral
         
         ## For BM
-        ##矩形公式
+        ##
         eps, alpha_tmp, sigma_tmp =1., 1.5, 1. ## coupling MultiBM+LM
         C_alpha_tmp = alpha_tmp*gamma(1/2+alpha_tmp/2) / (2**(1-alpha_tmp)*(np.pi**0.5)*gamma(1-alpha_tmp/2))
         sigma[count] = np.sum(p_learned*((u0*sigma_x+mu_x-x0)**2))*du / (dt * sigma_x) - 2 * (sigma_tmp**alpha_tmp) * (eps**(2-alpha_tmp)) * C_alpha_tmp / (2-alpha_tmp)
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     ## Plotting drift
     drift_coeff = np.polyfit(x_init, drift, 3)
     p1 = np.poly1d(drift_coeff)
-    drift_fitting = p1(x_init)  #拟合y值
+    drift_fitting = p1(x_init)  
     plt.style.use('classic')
     plt.figure(figsize=(12,8), facecolor='white', edgecolor='black')
     
@@ -226,7 +226,7 @@ if __name__ == "__main__":
     ## Plotting BM
     sigma_coeff = np.polyfit(x_init, sigma, 2)
     p1 = np.poly1d(sigma_coeff)
-    sigma_fitting = p1(x_init)  #拟合y值
+    sigma_fitting = p1(x_init)  
     plt.plot(x_init, sigma_fitting, 'r')
     sigma_T = (x_init+0)**2
     plt.plot(x_init, sigma_T, 'b')
@@ -244,7 +244,7 @@ if __name__ == "__main__":
     for k in range(N):
         k = k + 1
         
-        ##标准化
+        
         result1 = pow(resampling_data, 2) < (eps)**2
         result2 = pow(resampling_data, 2) < (m * eps)**2
         n_0 = np.sum(result2) - np.sum(result1)
